@@ -1,0 +1,6 @@
+wsl -d Ubuntu
+
+
+curl -X POST localhost:5000/parcel \
+    -H "Content-Type: application/json" \
+    -d "{\"parcel_id\":1}"
