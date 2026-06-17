@@ -1,6 +1,11 @@
+
+Start deployment
+
 wsl -d Ubuntu
+sudo systemctl start k3s #assuming not already running
+kubectl apply -f deployment.yaml
 
 
-curl -X POST localhost:5000/parcel \
+curl -X POST 172.29.63.43:30008/parcel \
     -H "Content-Type: application/json" \
     -d "{\"parcel_id\":1}"

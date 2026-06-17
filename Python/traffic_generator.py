@@ -2,16 +2,16 @@ import time
 import requests
 from concurrent.futures import ThreadPoolExecutor
 
-URL = "http://localhost:5000/parcel"
 REQUESTS_PER_SECOND = 1
+url = ""
 
 executor = ThreadPoolExecutor(max_workers=50)
 
-
 def send_request(i):
     try:
+        print("sending request to: " + url)
         response = requests.post(
-            URL,
+            url,
             json={"parcel_id": i},
             timeout=5
         )
@@ -21,11 +21,22 @@ def send_request(i):
 
 
 def main():
+
+    global url
+
+    print("Enter the node IP:port/endpoint:")
+    nodeIP = input()
+
+    url = f"http://{nodeIP}"
+
+    print(f"URL: {url}")
+
     parcel_id = 1
 
     interval = 1 / REQUESTS_PER_SECOND
 
     while True:
+        print("loop")
         # schedule request immediately (non-blocking)
         executor.submit(send_request, parcel_id)
 
