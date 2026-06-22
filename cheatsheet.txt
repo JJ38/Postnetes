@@ -5,6 +5,10 @@ wsl -d Ubuntu
 sudo systemctl start k3s #assuming not already running
 kubectl apply -f deployment.yaml
 
+sudo cat /etc/rancher/k3s/k3s.yaml
+
+makes sure the cluster config is readable from windows
+
 
 curl -X POST 172.29.63.43:30008/parcel \
     -H "Content-Type: application/json" \
