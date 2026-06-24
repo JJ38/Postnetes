@@ -1,5 +1,15 @@
 import time
 from kubernetes import client, config
+from flask import Flask, jsonify
+from flask_cors import CORS
+import threading
+
+app = Flask(__name__)
+
+CORS(app)
+
+parsedPods = []
+parsedServices = []
 
 CLUSTER_NAMESPACE = "default"
 
@@ -9,36 +19,28 @@ contexts = config.list_kube_config_contexts(
     config_file="/etc/rancher/k3s/k3s.yaml"
 )
 
-print(contexts)
-
 v1 = client.CoreV1Api()
 
 def getPods():
 
+    global parsedPods
+
     pods = v1.list_namespaced_pod(CLUSTER_NAMESPACE)
 
     parsedPods = []
-    
+
     for pod in pods.items:
 
-        pod_data = {
-            "name": pod.metadata.name,
-            "status": pod.status.phase,
-            "ip": pod.status.pod_ip,
-            "labels": pod.metadata.labels,
-            "ports": [
-                c.ports for c in pod.spec.containers
-                if c.ports
-            ]
-        }
+        pod_data = pod.to_dict()
         
         parsedPods.append(pod_data)
 
 
     return parsedPods
 
-
 def getServices():  
+
+    global parsedServices
 
     services = v1.list_namespaced_service(CLUSTER_NAMESPACE)
 
@@ -46,43 +48,60 @@ def getServices():
 
     for service in services.items:
 
-        service_data = {
-            "name": service.metadata.name,
-            "type": service.spec.type,
-            "cluster_ip": service.spec.cluster_ip,
-            "ports": [
-                {
-                    "port": p.port,
-                    "target": p.target_port
-                }
-                for p in service.spec.ports
-            ],
-            "selector": service.spec.selector
-        }
+        service_data = service.to_dict()
 
         parsedServices.append(service_data)
 
     return parsedServices
-
-
-
-while True:
-    try:
     
-        start = time.perf_counter()
 
-        pods = getPods()
-        services = getServices()
+def pollKubernetes():
 
-        duration = time.perf_counter() - start
+    while True:
+        try:
+        
+            start = time.perf_counter()
 
-        print("before len(*.items)")
+            pods = getPods()
+            services = getServices()
 
-        print(f"Pods: {len(pods.items)} | Poll time: {duration:.3f}s")
-        print(f"Services: {len(services.items)} | Poll time: {duration:.3f}s")
+            duration = time.perf_counter() - start
 
-    except Exception as e:
-        print("Kubernetes error:", e)
+            print("before len(*.items)")
 
-    time.sleep(5)
+            print(f"Pods: {len(pods)} | Poll time: {duration:.3f}s")
+            print(f"Services: {len(services)} | Poll time: {duration:.3f}s")
 
+        except Exception as e:
+            print("Kubernetes error:", e)
+
+        time.sleep(5)
+
+
+@app.route("/get-game-state", methods=["GET"])
+def get_game_state():
+
+    gameState = {
+        "pods": parsedPods,
+        "services": parsedServices
+    }
+
+    response = jsonify(gameState)
+    response.headers.add(
+        "Access-Control-Allow-Origin",
+        "http://localhost:5173"
+    )
+
+    return response
+
+
+
+
+threading.Thread(
+    target=pollKubernetes,
+    daemon=True
+).start()
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001)

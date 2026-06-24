@@ -6,6 +6,9 @@ sudo systemctl start k3s #assuming not already running
 kubectl apply -f deployment.yaml
 
 sudo cat /etc/rancher/k3s/k3s.yaml
+sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+
+source .venv/bin/activate
 
 makes sure the cluster config is readable from windows
 

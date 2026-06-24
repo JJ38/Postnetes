@@ -65,8 +65,6 @@ export default class GameControlModel {
 
         this.scene.input.on('pointerdown', (pointer) => {
 
-            console.log("pointer down");
-
             this.isDragging = true;
 
             this.startPointerX = pointer.x;
@@ -90,13 +88,10 @@ export default class GameControlModel {
 
     calculateDragPosition(){
 
-        console.log(this.pointer);
-
          // Calculate raw movement
         const dragX = this.pointer.x - this.startPointerX;
         const dragY = this.pointer.y - this.startPointerY;
         
-        // ADJUSTED: Divide the movement by the current zoom
         // This ensures that 10 pixels of mouse movement equals 10 pixels of camera movement, 
         // regardless of whether you are zoomed in or out.
         const visibleWorldSpace = this.camera.height; //camera/canvas height * (initial zoom / current zoom).
@@ -108,8 +103,6 @@ export default class GameControlModel {
         //adjust the camera's scrollY to ensure the top of the bay door is always visible, even when zoomed in
         const newY = Math.max(topWallY, attemptNewY);
 
-        console.log(`newX: ${newX}, newY: ${newY}`);
-
         this.setCameraPosition(newX, newY);
 
     }
@@ -117,7 +110,6 @@ export default class GameControlModel {
     updateCameraPosition(){
         
         if(this.isDragging){
-            console.log("dragging");
             this.calculateDragPosition();
         }   
 
