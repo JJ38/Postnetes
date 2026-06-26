@@ -6,7 +6,7 @@ import threading
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app) #allows all origins
 
 parsedPods = []
 parsedServices = []
@@ -31,10 +31,26 @@ def getPods():
 
     for pod in pods.items:
 
-        pod_data = pod.to_dict()
-        
-        parsedPods.append(pod_data)
-
+        parsedPods.append({
+            "name": pod.metadata.name,
+            "namespace": pod.metadata.namespace,
+            "ip": pod.status.pod_ip,
+            "node": pod.spec.node_name,
+            "phase": pod.status.phase,
+            "hostIP": pod.status.host_ip,
+            "startTime": pod.status.start_time.isoformat() if pod.status.start_time else None,
+            "containers": [
+                {
+                    "name": c.name,
+                    "image": c.image,
+                    "ports": [
+                        p.container_port
+                        for p in (c.ports or [])
+                    ]
+                }
+                for c in pod.spec.containers
+            ]
+        })
 
     return parsedPods
 
@@ -48,9 +64,24 @@ def getServices():
 
     for service in services.items:
 
-        service_data = service.to_dict()
-
-        parsedServices.append(service_data)
+        parsedServices.append({
+            "name": service.metadata.name,
+            "namespace": service.metadata.namespace,
+            "type": service.spec.type,
+            "clusterIP": service.spec.cluster_ip,
+            # "externalIPs": service.spec.external_i_ps or [],
+            "selector": service.spec.selector or {},
+            "ports": [
+                {
+                    "name": p.name,
+                    "port": p.port,
+                    "targetPort": p.target_port,
+                    "protocol": p.protocol,
+                    "nodePort": p.node_port
+                }
+                for p in service.spec.ports
+            ]
+        })
 
     return parsedServices
     

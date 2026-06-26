@@ -29,7 +29,6 @@ export default class MainSceneModel{
             const response = await fetch("http://localhost:5001/get-game-state");
             // console.log(response.status);
             const jsonClusterState = await response.json();
-            // console.log(data);
 
             this.parseClusterState(jsonClusterState);
 

@@ -8,6 +8,7 @@ kubectl apply -f deployment.yaml
 sudo cat /etc/rancher/k3s/k3s.yaml
 sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 
+python -m venv .venv
 source .venv/bin/activate
 
 makes sure the cluster config is readable from windows
@@ -16,3 +17,24 @@ makes sure the cluster config is readable from windows
 curl -X POST 172.29.63.43:30008/parcel \
     -H "Content-Type: application/json" \
     -d "{\"parcel_id\":1}"
+
+./start.ps1 to run powershell script
+
+tmux
+
+tmux ls - list sessions
+
+Ctrl + B :
+
+    w - view all windows
+    c - new window
+    n - next window
+    p - previous window
+    , - rename window
+    & - kill window
+
+    % - vertical split
+    " - horizontal split
+    Arrow key - move between panes
+    o - cycle panes
+    q - show pane number
