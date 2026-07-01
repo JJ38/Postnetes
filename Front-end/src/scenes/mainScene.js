@@ -21,7 +21,7 @@ export class MainScene extends Phaser.Scene {
         const zoom_step = 0.05;
 
         this.gameControlModel = new GameControlModel(this.camera, this, min_zoom, max_zoom, zoom_step);
-        this.mainSceneModel = new MainSceneModel();
+        this.mainSceneModel = new MainSceneModel(this);
 
     }
 
@@ -34,13 +34,11 @@ export class MainScene extends Phaser.Scene {
     create() {
 
         const bayDoor = this.add.image(0, 0, 'bay_door_open'); //adds image to the scene at 0,0 in world space
-        bayDoor.setOrigin(0, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
+        bayDoor.setOrigin(0.5, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
 
         // sets the camera position to the left to make sure the centre of the bay door is in the top centre of the screen
         this.camera.scrollX = -(this.camera.width * (1 / this.camera.zoom)) / 2 + bayDoor.width / 2;
-        
-        console.log(bayDoor.x)
-        console.log(bayDoor.y)
+
 
         //add walls to the left of bay
 
@@ -48,7 +46,7 @@ export class MainScene extends Phaser.Scene {
 
             const wall = this.add.image(bayDoor.x + bayDoor.width * (i + 1), 0, 'wall'); 
             wall.setScale(1.17)
-            wall.setOrigin(0, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
+            wall.setOrigin(0.5, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
 
         }
 
@@ -59,7 +57,7 @@ export class MainScene extends Phaser.Scene {
 
             const wall = this.add.image(bayDoor.x - bayDoor.width * (i + 1), 0, 'wall'); 
             wall.setScale(1.17)
-            wall.setOrigin(0, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
+            wall.setOrigin(0.5, 0); // Set origin to top left. Origins are in the center by default (0.5, 0.5)
 
         }
 
@@ -68,7 +66,6 @@ export class MainScene extends Phaser.Scene {
 
     //60 times a second roughly
     update(){
-
 
         this.gameControlModel.updateCameraPosition();
         this.mainSceneModel.updateGameState(); //poll kubernetes cluster

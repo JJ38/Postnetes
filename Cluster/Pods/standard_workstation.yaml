@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  generateName: standard-workerstation-
+  generateName: standard-workstation-
   labels:
     app: standard-workstation 
 spec:

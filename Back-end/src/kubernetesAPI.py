@@ -39,6 +39,7 @@ def getPods():
             "phase": pod.status.phase,
             "hostIP": pod.status.host_ip,
             "startTime": pod.status.start_time.isoformat() if pod.status.start_time else None,
+            "labels": pod.metadata.labels,
             "containers": [
                 {
                     "name": c.name,
@@ -69,6 +70,7 @@ def getServices():
             "namespace": service.metadata.namespace,
             "type": service.spec.type,
             "clusterIP": service.spec.cluster_ip,
+            "labels": service.metadata.labels,
             # "externalIPs": service.spec.external_i_ps or [],
             "selector": service.spec.selector or {},
             "ports": [
